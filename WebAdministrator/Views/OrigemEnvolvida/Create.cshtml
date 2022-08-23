@@ -1,0 +1,139 @@
+﻿@model WebAdministrator.Models.OrigemEnvolvida
+
+@{
+    ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
+
+    var listFamilia = new SelectList(WebAdministrator.Util.Utility.GetSelectLists<Familia>(x => x.Status).Select(y => new SelectListItem { Value = y.Cd_Grupo_Familia.ToString(), Text = y.Ds_Grupo_Familia }).AsEnumerable(), "Value", "Text");
+
+    if (Convert.ToInt32(ViewData["retorno"]) > 0)
+    {
+        <script>
+            M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp; Registro @(Convert.ToInt32(ViewData["retorno"]) == 1 ? "cadastrado": "atualizado") com sucesso!', classes: 'blue darken-2 rounded' });
+        </script>
+    }
+}
+
+<h4>@(Model == null ? "Cadastro" : "Edição") de Empresa - origem/envolvida </h4>
+<br />
+<form asp-action='@(Model == null ? "Create" : "Edit")'>
+    <input type="hidden" asp-for="Cd_Centro_Custo" />
+    <input type="hidden" asp-for="Cd_Usuario_Criacao" />
+    <div class="row">
+        <div class="input-field col s6">
+            <i class="material-icons prefix">subdirectory_arrow_right</i>
+            <input type="text" autocomplete="off"  asp-for="Ds_Empresa_Origem" />
+            <input asp-for="Cd_Empresa_Origem" type="hidden" />
+            <label asp-for="Ds_Empresa_Origem"></label>
+            <span asp-validation-for="Cd_Empresa_Origem" class="red-text"></span>
+            <span asp-validation-for="Ds_Empresa_Origem" class="red-text"></span>
+        </div>
+        <div class="input-field col s6">
+            <i class="material-icons prefix">subdirectory_arrow_right</i>
+            <input type="text" autocomplete="off" asp-for="Ds_Empresa_Envolvida" />
+            <input asp-for="Cd_Empresa_Envolvida" type="hidden"  />
+            <label asp-for="Ds_Empresa_Envolvida"></label>
+            <span asp-validation-for="Cd_Empresa_Envolvida" class="red-text"></span>
+            <span asp-validation-for="Ds_Empresa_Envolvida" class="red-text"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="switch col s12">
+            Status: &nbsp;
+            <label>
+                Inativo
+                <input type="checkbox" asp-for="Status" name="Status" id="Status">
+                <span class="lever"></span>
+                Ativo
+            </label>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col s12">
+            <button class="btn waves-effect waves-light" type="submit" name="action">
+                <i class="material-icons left">save</i>
+                @(Model == null ? "Adicionar" :"Atualizar")
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model != null ? "none" : "");">
+                <i class="material-icons left">clear</i>
+                Limpar
+            </button>
+
+        </div>
+    </div>
+</form>
+<script>
+    document.getElementsByName('Status')[0].checked = Boolean(@(Model == null ? 1 : Convert.ToInt32(Model.Status)));
+
+    $(document).ready(function () {
+
+        $('#Ds_Empresa_Origem').on('input', function (event) {
+
+            let filter = $(this).val();
+
+            if (filter.length < 3) {
+
+                $('#Cd_Empresa_Origem').val(0)
+                return;
+            }
+
+            autocompleteEmpresa(event);
+        });
+
+        $('#Ds_Empresa_Envolvida').on('input', function (event) {
+
+            let filter = $(this).val();
+
+            if (filter.length < 3) {
+
+                $('#Cd_Empresa_Envolvida').val(0)
+                return;
+            }
+
+            autocompleteEmpresa(event);
+        });
+
+        var autocompleteEmpresa = function (event) {
+
+            var tipo = '/Empresa/GetAutoComplete';
+            var lstItem = {};
+
+            jQuery.ajax({
+                type: 'Get',
+                url: tipo,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { _campo: event.currentTarget.value, _type:  1 }
+            })
+                .done(function (dataComplete) {
+
+                    lstItem = dataComplete;
+                    var dataCountry = {};
+                    dataComplete.forEach(function (v) {
+                        dataCountry[v.text] = null;
+                    });
+
+                    if (dataComplete.length > 1) {
+                        if (event.currentTarget.id == 'Ds_Empresa_Origem')
+                            $('#Cd_Empresa_Origem').val(0);
+                        else
+                            $('#Cd_Empresa_Envolvida').val(0);
+                    }
+
+                    $('#' + event.currentTarget.id).autocomplete({
+                        data: dataCountry,
+                        onAutocomplete: function (v) {
+                            var obj = lstItem.filter(s => s.text == v)[0];
+                            $('#' + (event.currentTarget.id == 'Ds_Empresa_Origem' ? 'Cd_Empresa_Origem' : 'Cd_Empresa_Envolvida')).val(obj.id);
+                        }
+                    });
+
+                    $('#' + event.currentTarget.id).autocomplete('open')
+                })
+                .fail(function () {
+                    M.toast({ html: '<pre><i class="material-icons white-text">report</i> ERRO: AUTO-COMPLETE!<p>Ocorreu uma falha na busca de valores do auto-complete.</p></pre>', classes: 'gray darken-3 rounded' });
+                });
+            }
+    });
+</script>
+

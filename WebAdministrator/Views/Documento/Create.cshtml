@@ -1,0 +1,64 @@
+﻿@model WebAdministrator.Models.Documento
+
+@{
+    ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
+
+    var listItem = new SelectList(WebAdministrator.Util.Utility.GetSelectLists<DominioGenerico>(x => x.No_Dominio_Generico.Equals("TIPO_DOCUMENTO")).Select(y => new SelectListItem { Value = y.Cd_Dominio_Generico.ToString(), Text = y.Ds_Dominio_Generico }).AsEnumerable(), "Value", "Text");
+
+    if (Convert.ToInt32(ViewData["retorno"]) > 0)
+    {
+        <script>
+        M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp;Documento @(Convert.ToInt32(ViewData["retorno"]) == 1 ? "cadastrado": "atualizado") com sucesso!', classes: 'blue darken-2 rounded' });
+        </script>
+    }
+}
+
+<h4>@(Model == null ? "Cadastro" : "Edição") de Documento</h4>
+<br />
+<div class="row">
+    <div class="">
+        <form asp-action='@(Model == null ? "Create" : "Edit")'>
+            <div asp-validation-summary="ModelOnly" class="red-text"></div>
+            <input asp-for="Cd_Documento" type="hidden" />
+
+            <div class="input-field">
+                <i class="material-icons prefix">description</i>
+                <label asp-for="Ds_Documento"></label>
+                <input asp-for="Ds_Documento" autocomplete="off" class="autocomplete" />
+                <span asp-validation-for="Ds_Documento" class="red-text"></span>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">storage</i>
+                <select asp-for="Cd_Tipo_Documento" class="validate" asp-items="listItem" >
+                    <option value="" disabled selected>Selecione uma opção...</option>
+                </select>
+                <label asp-for="Cd_Tipo_Documento"></label>
+                <span asp-validation-for="Cd_Tipo_Documento" class="red-text"></span>
+            </div>
+            <br>
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Status" name="Status" id="Status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+            <div class="input-field">
+                <button class="btn waves-effect waves-light" type="submit" name="action" id="btnSendDocumento">
+                    <i class="material-icons left">save</i>
+                    @(Model == null ? "Adicionar" :"Atualizar") Documento
+                </button>
+                <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model != null ? "none" : "");">
+                    <i class="material-icons left">clear</i>
+                    Limpar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementsByName('Status')[0].checked = Boolean(@(Model == null ? 1 : Convert.ToInt32(Model.Status)));
+</script>

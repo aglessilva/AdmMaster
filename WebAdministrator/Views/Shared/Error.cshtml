@@ -1,0 +1,31 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h4 class="text-danger">Um erro ocorreu durante o processamento da rquisição.</h4>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+<p>
+    <strong class="red-text">DETALHES DA OCORRÊNCIA</strong>
+</p>
+
+<div class="col row z-depth-3  grey darken-2 white-text" style="border-radius: 10px; padding:12px 0px 0px 0px;">
+    <div class="col s1 left-align">
+        <i class="material-icons white-text">report_problem</i>
+    </div>
+    <div class="col s11">
+        <p class="center-align">
+            @Model.ErrorException.Message
+        </p>
+        <p class="left-align">
+            @Model.ErrorException.InnerException
+        </p>
+    </div>
+</div>

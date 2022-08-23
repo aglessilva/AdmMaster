@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Home";
+
+    //  var listItem = new SelectList(WebAdministrator.Util.Utility.GetSelectLists<Sentenca>(x => x.Cd_Sentenca > 0 ).Select( y => new SelectListItem { Value = y.Cd_Sentenca.ToString(), Text = y.Ds_Sentenca  }).AsEnumerable(),"Value", "Text");
+}
+
+<div>
+    @*<h5 class="center-align">Formulário de solicitação de subsídios para processos trabalhistas</h5>*@
+    @*<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
+</div>
+<div class="row">
+    @if (Context.User.Identity.IsAuthenticated)
+    {
+        <img src="~/images/assinatura-claro.png" style=" margin-top:100px; margin-left:auto; margin-right:auto; display:block; width:200px; height:200px;" />
+    }
+    else
+    {
+        <div class="center-align">
+            <img src="~/images/pngwing.png" style=" margin-top:100px; margin-left:auto; margin-right:auto; display:block; width:200px; height:200px;" />
+            <h5 class="center-align">Possíveis causas...</h5>
+            <div class="red-text flow-text">Usuário não autorizado!</div>
+            <div class="red-text flow-text">Sessão expirada!</div>
+        </div>
+
+    }
+</div>
+<div>
+    @*<select  id="Sigla" asp-items="listItem">
+            <option value="0" disabled selected>Selecione uma opção</option>
+        </select>*@
+</div>

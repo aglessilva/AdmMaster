@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewData["Title"] = "Calendário";
+}
+
+<h4>Pesquisar Datas</h4>
+<form>
+    <div class="row">
+        <div class="input-field col s2">
+            <input type="text" id="dt_nacional" autocomplete="off" />
+            <label>Data</label>
+        </div>
+        <div class="input-field col s3">
+            <select id="sg_uf" asp-items="@WebAdministrator.Util.Utility.GetSigla()">
+                <option value="">Todos</option>
+                <option value="NN">Nacional</option>
+            </select>
+            
+            <label>UF-Estado</label>
+        </div>
+        <div class="input-field col s5">
+            <input type="text" id="ds_titulo_data" autocomplete="off" />
+            <label>Descrição</label>
+        </div>
+        <div class="input-field col s2">
+            <select id="StatusFilter">
+                <option value="" selected>Todos</option>
+                <option value="1">Ativo</option>
+                <option value="0">Inativo</option>
+            </select>
+            <label>Status</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+            <a asp-controller="Calendario" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Nova Data</a>
+        </div>
+    </div>
+
+</form>
+<hr>
+<footer id="DivRenderData" style="display:none;">
+    <partial name="ListRecord" />
+</footer>
+
+<script>
+    $(document).ready(function () {
+        $("#dt_nacional").mask("99/99/9999");
+    });
+</script>

@@ -1,0 +1,90 @@
+﻿@model WebAdministrator.Models.Advogado
+
+@{
+    ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
+
+    if (Convert.ToInt32(ViewData["retorno"]) > 0)
+    {
+        <script>
+            M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp; Advogado @(Convert.ToInt32(ViewData["retorno"]) == 1 ? "cadastrado": "atualizado") com sucesso!', classes: 'blue darken-2 rounded' });
+        </script>
+    }
+}
+
+<h4>@(Model == null ? "Cadastro" : "Edição") de Advogado</h4>
+<br />
+<form asp-action='@(Model == null ? "Create" : "Edit")'>
+    <input asp-for="Cd_Advogado" type="hidden" />
+    <input asp-for="Cd_Usuario_Criacao" type="hidden" />
+    <div class="row">
+        <div class="col s12">
+            <div asp-validation-summary="ModelOnly" class="red-text"></div>
+            <div class="input-field">
+                <i class="material-icons prefix">storage</i>
+                <select asp-for="Tipo_Advogado">
+                    <option value="0" selected disabled>Selecione uma opção</option>
+                    <option value="1">Interno</option>
+                    <option value="2">Reclamante</option>
+                </select>
+                <label asp-for="Tipo_Advogado"></label>
+                <span asp-validation-for="Tipo_Advogado" class="red-text"></span>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">code</i>
+                <input asp-for="Nu_Oab" autocomplete="off" style='text-transform:uppercase' class="autocomplete" />
+                <label asp-for="Nu_Oab"></label>
+                <span asp-validation-for="Nu_Oab" class="red-text"></span>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">account_circle</i>
+                <input asp-for="No_Advogado" autocomplete="off"  style='text-transform:uppercase' />
+                <label asp-for="No_Advogado"></label>
+                <span asp-validation-for="No_Advogado" class="red-text"></span>
+            </div>
+            <div class="switch col s4">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Status" name="Status" id="Status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col s12">
+            <button class="btn waves-effect waves-light" type="submit" name="action">
+                <i class="material-icons left">save</i>
+                @(Model == null ? "Adicionar" :"Atualizar") Advogado
+            </button>
+            <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model != null ? "none" : "");">
+                <i class="material-icons left">clear</i>
+                Limpar
+            </button>
+
+        </div>
+    </div>
+</form>
+<script>
+    document.getElementsByName('Status')[0].checked = Boolean(@(Model == null ? 1 : Convert.ToInt32(Model.Status)));
+
+    $(document).ready(function () {
+        $('#Tipo_Advogado').change((event) => {
+            if (event.currentTarget.value == 1) {
+                $('#Nu_Oab').focus();
+                $('#Nu_Oab').val('000000/NN');
+                $('#Nu_Oab').attr('readonly', true);
+            }
+            else {
+                $('#Nu_Oab').val('');
+                $('#Nu_Oab').attr('readonly', false);
+                $('#Nu_Oab').focus();
+            }
+        })
+
+        $('#Nu_Oab').attr('readonly', $('#Tipo_Advogado').val() == 1);
+    });
+
+</script>
