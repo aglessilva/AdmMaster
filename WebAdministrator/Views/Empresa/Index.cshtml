@@ -1,0 +1,44 @@
+﻿
+
+@{
+    ViewData["Title"] = "Empresas Monitoradas";
+}
+
+<h4>Pesquisar Empresas Monitoradas</h4>
+
+<form>
+    <div class="row">
+
+        <div class="input-field col s8">
+            @*<i class="material-icons prefix">group</i>*@
+            <input id="Empresa" type="text">
+            <label for="Empresa">Empresa</label>
+        </div>
+        <div class="input-field col s2">
+            @*<i class="material-icons prefix">code</i>*@
+            <input id="Cnpj" type="text" class="validate">
+            <label for="Cnpj">CNPJ</label>
+        </div>
+
+        <div class="input-field col s2">
+            <select id="StatusFilter">
+                <option value="" selected>Todos</option>
+                <option value="1">Ativo</option>
+                <option value="0">Inativo</option>
+            </select>
+            <label>Status</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+            <a asp-controller="Empresa" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Nova Empresa</a>
+        </div>
+    </div>
+</form>
+<hr>
+<footer id="DivRenderData" style="display:none;">
+    <partial name="ListRecord" />
+</footer>

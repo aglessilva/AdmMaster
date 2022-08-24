@@ -1,0 +1,132 @@
+﻿@model X.PagedList.IPagedList<Comarca>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+<style>
+    tbody {
+        display: block;
+        max-height: 240px;
+        overflow: auto;
+    }
+
+        thead, tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed; /* even columns width , fix width of table too*/
+        }
+
+    td, th {
+        padding: 5px;
+        display: table-cell;
+        text-align: left;
+        vertical-align: middle;
+        border-radius: 2px;
+        margin: 1px;
+    }
+
+    .pagination li a {
+        color: #444;
+        display: inline-block;
+        font-size: 14px;
+        padding: 0 10px;
+    }
+
+    .totalitemcount {
+        font-size: 11px;
+        color: slategrey;
+        text-align: right;
+    }
+</style>
+
+@if (Model?.Count() > 0)
+{
+    <table class="striped">
+        <thead>
+            <tr>
+                <th style="width:80px;">
+                    @Html.DisplayNameFor(model => model[0].Sg_Uf)
+                </th>
+                <th  style="width:100%;">
+                    @Html.DisplayNameFor(model => model[0].No_Comarca)
+                </th>
+                <th style="width:100px;" class="left-align">
+                    @Html.DisplayNameFor(model => model[0].Status)
+                </th>
+                <th style="width:150px;" class="totalitemcount">Total de Registros: @Model.TotalItemCount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="width:80px;" class="left-align">
+                        @Html.DisplayFor(modelItem => item.Sg_Uf)
+                    </td>
+                    <td style="width:100%;" class="left-align">
+                        @Html.DisplayFor(modelItem => item.No_Comarca)
+                    </td>
+                    <td style="width:80px;" class="left-align">
+                       @(item.Status ? "Ativo" : "Inativo")
+                    </td>
+                    <td style="width:150px;" class="right-align">
+                        <a asp-controller="Comarca" asp-action="Create" asp-route-id="@item.Cd_Comarca" class="waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Editar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot style="padding-top:0px;">
+            <tr>
+                <td colspan="5" class="center">
+                    <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                    @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+               {
+                   DisplayLinkToIndividualPages = true,
+                   DisplayPageCountAndCurrentLocation = false,
+                   MaximumPageNumbersToDisplay = 10,
+                   LiElementClasses = new string[] { "waves-effect" },
+                   PageClasses = new string[] { "btnSearch" },
+                   DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                   DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                   DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+               })
+                </td>
+            </tr>
+
+        </tfoot>
+    </table>
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado com o filtro aplicado</div>
+    </div>
+
+}
+<script>
+    $(document).ready(function () {
+
+        $('.pagination').attr('id', 'pageItem');
+
+        var paren = $('.pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('.btnSearch').click(() => {
+            var ul = document.getElementById('pageItem');
+            ul.onclick = function (event) {
+                var target = getEventTarget(event);
+                $("#btnSearch").trigger("click", target.innerHTML);
+            };
+        });
+    });
+
+    function getEventTarget(e) {
+        e = e || window.event;
+        return e.target || e.srcElement;
+    }
+
+</script>

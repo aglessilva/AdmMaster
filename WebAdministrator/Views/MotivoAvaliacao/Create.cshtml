@@ -1,0 +1,66 @@
+﻿@model WebAdministrator.Models.MotivoAvaliacao
+
+@{
+    ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
+
+    if (Convert.ToInt32(ViewData["retorno"]) > 0)
+    {
+        <script>
+            M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp;Motivo da avaliação @(Convert.ToInt32(ViewData["retorno"]) == 1 ? "cadastrado": "atualizado") com sucesso!', classes: 'blue darken-2 rounded' });
+        </script>
+    }
+}
+
+
+<h4>@(Model == null ? "Cadastro" : "Edição") de Motivo da Avaliação</h4>
+<br />
+<div class="row">
+    <div class="col s12">
+        <form asp-action='@(Model == null ? "Create" : "Edit")'>
+            <input asp-for="Cd_Motivo_Avaliacao" type="hidden" />
+            <input asp-for="Cd_Usuario_Criacao" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="red-text"></div>
+            <div class="input-field">
+                <i class="material-icons prefix">mode_edit</i>
+                <input asp-for="Ds_Motivo" autocomplete="off" class="autocomplete"/>
+                <label asp-for="Ds_Motivo"></label>
+                <span asp-validation-for="Ds_Motivo" class="red-text"></span>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">storage</i>
+                <select asp-for="Tipo" class="validate">
+                    <option value="" disabled selected>Selecione uma opção...</option>
+                    <option value="1">Subsídio</option>
+                    <option value="2">Subsídio Específico</option>
+                    <option value="3">Resumo Fático</option>
+                </select>
+                <label asp-for="Tipo"></label>
+                <span asp-validation-for="Tipo" class="red-text"></span>
+            </div>
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Status" name="Status" id="Status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+            <br />
+
+            <div class="input-field">
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    <i class="material-icons left">save</i>
+                    @(Model == null ? "Adicionar" :"Atualizar") Motivo
+                </button>
+                <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model != null ? "none" : "");">
+                    <i class="material-icons left">clear</i>
+                    Limpar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementsByName('Status')[0].checked = Boolean(@(Model == null ? 1 : Convert.ToInt32(Model.Status)));
+</script>

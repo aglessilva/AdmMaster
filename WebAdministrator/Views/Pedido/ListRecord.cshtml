@@ -1,0 +1,325 @@
+﻿@model X.PagedList.IPagedList<dynamic>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+
+<style>
+    tbody {
+        display: block;
+        max-height: 245px;
+        overflow: auto;
+    }
+
+        thead, tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed; /* even columns width , fix width of table too*/
+        }
+
+    td, th {
+        padding: 5px;
+        display: table-cell;
+        text-align: left;
+        vertical-align: middle;
+        border-radius: 2px;
+        margin: 1px;
+    }
+
+    .pagination li a {
+        color: #444;
+        display: inline-block;
+        font-size: 14px;
+        padding: 0 10px;
+    }
+
+    .totalitemcount {
+        font-size: 11px;
+        color: slategrey;
+        text-align: right;
+    }
+
+    .modal {
+        width: 85% !important;
+        overflow: hidden !important;
+    }
+</style>
+@{
+    var listItem = new SelectList(WebAdministrator.Util.Utility.GetSelectLists<Sentenca>(x => x.Cd_Sentenca > 0).Select(y => new SelectListItem { Value = y.Cd_Sentenca.ToString(), Text = y.Ds_Sentenca }).AsEnumerable(), "Value", "Text");
+}
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions
+{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+<div id="modalParecer" class="modal modal-fixed-footer">
+    <form id="frmParecer">
+        <input id="cd_tipo_pedido" name="cd_tipo_pedido" type="hidden" />
+        <input id="cd_justificativa_sentenca" name="cd_justificativa_sentenca" type="hidden" />
+        <div class="row">
+            <div class="input-field col s3 ">
+                <select id="cd_sentenca" name="cd_sentenca" asp-items="listItem">
+                    <option value="0" disabled selected>Selecione uma opção</option>
+                </select>
+                <label>Tipo</label>
+            </div>
+            <div class="input-field col s7">
+                <input type="text" class="autocomplete"  id="ds_justificativa_sentenca" name="ds_justificativa_sentenca"/>
+                <label>Justificativa</label>
+            </div>
+            <div class="col s2 input-field">
+                <div class="switch">
+                    <label>
+                        Inativo
+                        <input type="checkbox" name="status" id="status">
+                        <span class="lever"></span>
+                        Ativo
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="DivRenderParecer" style="display:none;">
+        <partial name="ListParecer" />
+    </div>
+    <div class="modal-footer">
+        <div class="col s9 left">
+            <p class="left indigo-text" id="titlePedido"></p>
+        </div>
+        <div class="col s3 right">
+            <a class="waves-effect waves-red btn-small" id="btnAddParecer">Salvar</a>
+            <a class="waves-effect waves-light btn-small" id="popUpFrmParecer">Novo</a>
+            <a class="modal-close btn-small" id="closeParecer">Fechar</a>
+        </div>
+    </div>
+</div>
+
+@if (Model?.Count() > 0)
+{
+    if (Model is X.PagedList.IPagedList<Pedido>)
+    {
+
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th style="width:100%;">
+                        Descrição do Pedido
+                    </th>
+                    <th style="width:100px;" class="left-align">
+                        Status
+                    </th>
+                    <th style="width:300px;" class="totalitemcount">Total de Registros: @Model.TotalItemCount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Pedido item in Model)
+                {
+                    <tr>
+                        <td style="width:100%;">
+                            @Html.DisplayFor(modelItem => item.Ds_Tipo_Pedido)
+                        </td>
+                        <td style="width:80px;" class="left-align">
+                            @(item.Status ? "Ativo" : "Inativo")
+                        </td>
+                        <td style="width:300px;" class="right-align">
+                            @*<a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>*@
+                            <a class="waves-effect btn-small modal-trigger lime darken-3" onclick="JavaScript: OpenParecer(JSON.stringify({ cd_tipo_pedido:@item.Cd_Tipo_Pedido, ds_tipo_pedido:'@item.Ds_Tipo_Pedido'}));" href="#modalParecer"><i class="material-icons left">chat</i>Parecer</a>
+                            <a asp-controller="Pedido" asp-action="Create" asp-route-id="@item.Cd_Tipo_Pedido" class="waves-effect waves-light btn-small"><i class="material-icons left">edit</i>Editar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot style="padding-top:0px;">
+                <tr>
+                    <td colspan="10" class="center" style="height:20px;">
+                        <input type="hidden" value="@Model.PageCount" id="pageCount" />
+                        @Html.PagedListPager(Model, page => null, new PagedListRenderOptions
+                   {
+                       DisplayLinkToIndividualPages = true,
+                       DisplayPageCountAndCurrentLocation = false,
+                       MaximumPageNumbersToDisplay = 10,
+                       LiElementClasses = new string[] { "waves-effect" },
+                       PageClasses = new string[] { "btnSearch" },
+                       DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                       DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                       DisplayEllipsesWhenNotShowingAllPageNumbers = false,
+                   })
+
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+}
+else
+{
+    <div class="col row z-depth-3 red white-text center-align" style="height: 50px; border: 1px solid; border-radius: 10px; padding:12px 0px 0px 0px;">
+        <div class="col s1 left-align"><i class="material-icons white-text">report_problem</i></div>
+        <div class="col s11 center">Nenhuma registro foi localizado com o filtro aplicado</div>
+    </div>
+}
+
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.pagination').attr('id', 'pageItem');
+
+        var paren = $('.pagination').find('li');
+
+        paren.each(function (index, li) {
+            li.id = li.innerText
+            li.innerHTML = "<a class='btnSearch'>" + li.innerText + "</a>";
+        });
+
+        $('.btnSearch').click(() => {
+            var ul = document.getElementById('pageItem');
+            ul.onclick = function (event) {
+                var target = getEventTarget(event);
+                $("#btnSearch").trigger("click", target.innerHTML);
+            };
+        });
+
+
+        $('#btnAddParecer').click(() => {
+
+            var obj = $('#frmParecer').serializeArray().reduce(function (json, { name, value }) {
+                json[name] = value;
+                return json;
+            }, {});
+
+            obj.status = obj?.status == 'on';
+
+            $.ajax({
+                headers: { "RequestVerificationToken": "@GetAntiXsrfRequestToken()" },
+                type: 'POST',
+                url: "/Pedido/AddJustificativa/",
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                data: obj,
+                dataType: 'html',
+                success: function (data) {
+                    if ($(data).attr('data') == undefined) {
+                        $('#frmParecer').trigger('reset');
+                        $('#cd_justificativa_sentenca').val(0);
+                        $('#cd_tipo_pedido').val(obj.cd_tipo_pedido);
+                        $("#DivRenderParecer").empty().html(data);
+                        M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp;Parecer resgistrado com sucesso!', classes: 'blue darken-2 rounded' });
+                    }
+                    else {
+                        var er = $(data).text().trim().split('\n');
+                        if (er.length > 0) {
+                            var html = '<ul>';
+                            er.forEach(function (n) {
+                                html += '<li><i class="Tiny material-icons white-text">chevron_right</i >&nbsp;' + n.trim() + '</li>'
+                            });
+                            html += '</ul>';
+
+                            M.toast({ html:  html, classes: 'purple darken-1 rounded' });
+                        }
+                    }
+                },
+                error: function () {
+                    $("#DivRenderParecer").empty().html('Ocorreu um erro ao tentar registrar o parecer do pedido');
+                }
+            });
+        });
+
+
+        $('#closeParecer').click(() => {
+            $('#frmParecer').trigger("reset");
+        });
+
+        $('#popUpFrmParecer').click(() => {
+            var cd_tipo_pedido = $('#cd_tipo_pedido').val();
+            $('#frmParecer').trigger("reset");
+            $("#status").prop("checked", true);
+            $('#cd_tipo_pedido').val(cd_tipo_pedido);
+        });
+
+
+        $('.autocomplete').on('input', function () {
+
+            let filter = $('.autocomplete').val();
+
+            if (filter.length < 3)
+                return;
+
+            var tipo = '/' + location.pathname.split('/')[1] + '/GetAutoCompleteJustificativa';
+            jQuery.ajax({
+                type: 'Get',
+                url: tipo,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { _campo: filter }
+            })
+                .done(function (dataComplete) {
+                    var dataCountry = {};
+                    dataComplete.forEach(function (v) {
+                        dataCountry[v.text] = null;
+                    });
+
+                    $('input.autocomplete').autocomplete({
+                        data: dataCountry
+                    });
+
+                    $('input.autocomplete').autocomplete('open')
+
+                })
+                .fail(function () {
+                    M.toast({ html: '<pre><i class="material-icons white-text">report</i> ERRO: AUTO-COMPLETE!<p>Ocorreu uma falha na busca de valores do auto-complete.</p></pre>', classes: 'gray darken-3 rounded' });
+                });
+        });
+
+    });
+
+    function getEventTarget(e) {
+        e = e || window.event;
+        return e.target || e.srcElement;
+    }
+
+    function OpenParecer(obj) {
+        var objPedido = JSON.parse(decodeURIComponent(obj));
+        $('#titlePedido').empty().html('<b>PEDIDO:<b/> ' + objPedido.ds_tipo_pedido);
+        $('#cd_tipo_pedido').val(objPedido.cd_tipo_pedido);
+
+        $("#status").prop("checked", true);
+
+        $('select').formSelect();
+        $('.modal').modal({
+            dismissible: false,
+            onOpenStart: function () {
+                $('#DivRenderParecer').css("display", "");
+                jQuery.ajax({
+                    type: 'Get',
+                    url: '/Pedido/Parecer/' + objPedido.cd_tipo_pedido,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "html"
+                })
+                    .done(function (data) {
+                        $("#DivRenderParecer").empty().html(data);
+
+                    })
+                    .fail(function (data) {
+                        $("#DivRenderParecer").empty().html(data.responseText);
+                    });
+            }
+        });
+    }
+
+    function EditParecer(obj) {
+        var item = $(obj).attr('data');
+        var objeto = JSON.parse(item);
+        $('#cd_sentenca').find('option[value=' + objeto.cd_sentenca + ']').prop('selected', true);
+        $('select').formSelect();
+
+        $('#ds_justificativa_sentenca').val(objeto.ds_justificativa_sentenca);
+        $('#cd_justificativa_sentenca').val(objeto.cd_justificativa_sentenca);
+        $('#status').prop('checked', objeto.status);
+        $('#ds_justificativa_sentenca').focus();
+    }
+
+</script>

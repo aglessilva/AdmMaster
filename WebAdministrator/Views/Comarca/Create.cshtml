@@ -1,0 +1,61 @@
+﻿@model WebAdministrator.Models.Comarca
+
+@{
+    ViewData["Title"] = Model == null ? "Cadastrar" : "Atualizar";
+
+    if (Convert.ToInt32(ViewData["retorno"]) > 0)
+    {
+        <script>
+            M.toast({ html: '<i class="material-icons white-text">check_circle</i>&nbsp;Comarca @(Convert.ToInt32(ViewData["retorno"]) == 1 ? "cadastrada": "atualizada") com sucesso!', classes: 'blue darken-2 rounded' });
+        </script>
+    }
+}
+
+<h4>@(Model == null ? "Cadastro" : "Edição") de Comarca</h4>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action='@(Model == null ? "Create" : "Edit")'>
+            <div asp-validation-summary="ModelOnly" class="red-text"></div>
+            <input asp-for="Cd_Comarca" type="hidden" />
+            <div class="input-field">
+                <i class="material-icons prefix">room</i>
+                <select asp-for="Sg_Uf" id="Sigla" asp-items="@WebAdministrator.Util.Utility.GetSigla()">
+                    <option value="" selected disabled>Selecione uma opção...</option>
+                </select>
+                <label asp-for="Sg_Uf">Sigla - Estado</label>
+                <span asp-validation-for="Sg_Uf" class="red-text"></span>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">add_location</i>
+                <input asp-for="No_Comarca" autocomplete="off" class="autocomplete" />
+                <label asp-for="No_Comarca"></label>
+                <span asp-validation-for="No_Comarca" class="red-text"></span>
+            </div>
+            <div class="switch">
+                Status: &nbsp;
+                <label>
+                    Inativo
+                    <input type="checkbox" asp-for="Status" name="Status" id="Status">
+                    <span class="lever"></span>
+                    Ativo
+                </label>
+            </div>
+            <br />
+            <div class="input-field">
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    <i class="material-icons left">save</i>
+                    @(Model == null ? "Adicionar" :"Atualizar") Comarca
+                </button>
+                <button class="btn waves-effect waves-light" type="button" id="clearFrm" style="display:@(Model != null ? "none" : "");">
+                    <i class="material-icons left">clear</i>
+                    Limpar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementsByName('Status')[0].checked = Boolean(@(Model == null ? 1 : Convert.ToInt32(Model.Status)));
+</script>

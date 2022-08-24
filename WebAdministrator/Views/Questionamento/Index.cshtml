@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewData["Title"] = "Questionamento";
+
+    var listItem = new SelectList(WebAdministrator.Util.Utility.GetSelectLists<DominioGenerico>(x => x.No_Dominio_Generico.Equals("TIPO_QUESTIONAMENTO")).Select(y => new SelectListItem { Value = y.Cd_Dominio_Generico.ToString(), Text = y.Ds_Dominio_Generico }).AsEnumerable(), "Value", "Text");
+    var listITipoContrato = new SelectList(WebAdministrator.Util.Utility.GetSelectLists<DominioGenerico>(x => x.No_Dominio_Generico.Equals("TIPO_CONTRATO")).Select(y => new SelectListItem { Value = y.Cd_Dominio_Generico.ToString(), Text = y.Ds_Dominio_Generico }).AsEnumerable(), "Value", "Text");
+}
+
+<h4>Pesquisar Questionário</h4>
+
+<form>
+    <div class="row">
+        <div class="col s4 input-field">
+            <input id="ds_questao" type="text" />
+            <label>Questionário</label>
+        </div>
+        <div class="col s3 input-field">
+            <select id="cd_tipo_questionamento" asp-items="listItem">
+                <option value="0" selected>Todos</option>
+            </select>
+            <label>Tipo</label>
+        </div>
+        <div class="col s3 input-field">
+            <select id="cd_tipo_contrato" asp-items="listITipoContrato">
+                <option value="0" selected>Todos</option>
+            </select>
+            <label>Tipo de Demanda</label>
+        </div>
+        <div class="input-field col s2">
+            <select id="StatusFilter">
+                <option value="" selected>Todos</option>
+                <option value="1">Ativo</option>
+                <option value="0">Inativo</option>
+            </select>
+            <label>Status</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12">
+            <a class="waves-effect waves-light btn-small" id="btnSearch"><i class="material-icons left">search</i>Pesquisar</a>
+            <a class="waves-effect waves-light btn-small" id="btnClear"><i class="material-icons left">clear</i>Limpar</a>
+            <a asp-controller="Questionamento" asp-action="Create" class="waves-effect waves-light btn-small"><i class="material-icons left small">add</i>Novo Questionário</a>
+        </div>
+    </div>
+</form>
+<hr>
+<footer id="DivRenderData" style="display:none;">
+    <partial name="ListRecord" />
+</footer>
